@@ -51,7 +51,7 @@ const fileUploadEngine = multer.diskStorage({
 export const uploadMulter = multer({ storage: fileUploadEngine });
 
 // init controllers
-export const initialiazedController = (controllers?: any[]) => {
+export const initialiazedController = (controllers: any[]) => {
 
   // show file publicly
   app.use('/storage', express.static(path.join(appRoot.path, '/storage')));
@@ -74,7 +74,7 @@ export const initialiazedController = (controllers?: any[]) => {
   });
 
   app.use(checkApiKey);
-  controllers?.forEach((controller) => {
+  controllers.forEach((controller) => {
     app.use(env().API_VERSION_PATH, controller.router);
   })
   app.get('/', (req: express.Request, res: express.Response) => {
