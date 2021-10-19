@@ -10,14 +10,14 @@
   "logging": false,
   "entities": [
     "src/models/**/*.ts",
-    "build/models/**/*.js"
+    "build/src/models/**/*.js"
   ],
   "migration": [
     "src/migrations/**/*.ts",
-    "build/migrations/**/*.js"
+    "build/src/migrations/**/*.js"
   ],
   "subscribers": [
     "src/subscribers/**/*.ts",
-    "build/subscribers/**/*.js"
+    "build/src/subscribers/**/*.js"
   ]
 }
