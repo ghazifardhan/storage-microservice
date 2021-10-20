@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import { Environtment } from './interfaces/env';
-import { createConnection, getRepository } from 'typeorm';
+import { Connection, createConnection, getRepository } from 'typeorm';
 import { checkApiKey } from './middlewares/check-api-key';
 import multer from 'multer';
 import { StorageController } from './controllers/storage/storage';
