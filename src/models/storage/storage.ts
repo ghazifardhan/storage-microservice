@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { AfterInsert, AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { env } from "../../server";
 
 @Entity({ name: 'storages' })
 export class Storage {
@@ -29,4 +30,18 @@ export class Storage {
 
   @Column()
   size: number;
+
+  @Column()
+  fileUrl: string;
+
+  @BeforeInsert()
+  beforeInsertFileUrl() {
+    this.fileUrl = env().APP_URL + this.id;
+  }
+
+  @AfterInsert()
+  afterInsertFileUrl() {
+    this.fileUrl = env().APP_URL + this.id;
+  }
+
 }

@@ -1,11 +1,10 @@
-import { getRepository } from "typeorm";
+import { createConnection, getRepository } from "typeorm";
 import { Key } from "../models/key/key";
 import express, { Request, Response, NextFunction } from 'express';
 import { generalResponse } from "../responses/general-responses";
 import { httpResponse } from "../responses/http-responses";
 
 export const checkApiKey = async (req: Request, res: Response, next: NextFunction) => {
-
   const apiKey = <string>req.headers["storage_api_key"];
   try {
     let key = await getRepository(Key).findOneOrFail({ secret: apiKey });

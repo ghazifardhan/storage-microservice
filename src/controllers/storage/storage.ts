@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { lutimesSync } from 'fs';
-import { getRepository } from 'typeorm';
+import { createConnection, getRepository } from 'typeorm';
 import { Storage } from '../../models/storage/storage';
 import { generalResponse } from '../../responses/general-responses';
 import { httpResponse } from '../../responses/http-responses';
@@ -44,6 +44,7 @@ export class StorageController {
           httpResponse: httpResponse.Success
         });
       } catch (e) {
+        console.log(e);
         return generalResponse({
           data: null,
           status: false,
@@ -64,7 +65,8 @@ export class StorageController {
   }
 
   private async multipleFile(req: Request, res: Response) {
-    let storageRepo = getRepository(Storage);
+    let connection = await createConnection();
+    let storageRepo = connection.getRepository(Storage);
 
     if (req.files !== undefined) {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
@@ -85,6 +87,9 @@ export class StorageController {
             storages.push(save);
           }
 
+          // close connection
+          connection.close();
+
           return generalResponse({
             data: storages,
             status: true,
@@ -93,6 +98,10 @@ export class StorageController {
             httpResponse: httpResponse.Success
           });
         } else {
+
+          // close connection
+          connection.close();
+
           return generalResponse({
             data: null,
             status: false,
@@ -102,6 +111,10 @@ export class StorageController {
           });
         }
       } else {
+
+        // close connection
+        connection.close();
+
         return generalResponse({
           data: null,
           status: false,
@@ -112,6 +125,9 @@ export class StorageController {
       }
     }
     
+    // close connection
+    connection.close();
+
     return generalResponse({
       data: null,
       status: false,

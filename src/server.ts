@@ -93,7 +93,7 @@ const runServer = (port: number) => {
         new StorageController()
       ]);
 
-      console.log(`Connection: ${connection.isConnected}`);
+      console.log(`Connection: ${connection.name}`);
       console.log(`App listening on the port ${port}`);
     });
   })
