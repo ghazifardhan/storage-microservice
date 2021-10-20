@@ -24,7 +24,8 @@ export const env = (): Environtment => {
     DB_HOST: envUnparsed.parsed!.DB_HOST,
     DB_NAME: envUnparsed.parsed!.DB_NAME,
     DB_USER: envUnparsed.parsed!.DB_USER,
-    DB_PASS: envUnparsed.parsed!.DB_PASS
+    DB_PASS: envUnparsed.parsed!.DB_PASS,
+    APP_URL: envUnparsed.parsed!.APP_URL,
   }
 }
 
