@@ -5,7 +5,7 @@ import { generalResponse } from "../responses/general-responses";
 import { httpResponse } from "../responses/http-responses";
 
 export const checkApiKey = async (req: Request, res: Response, next: NextFunction) => {
-  const apiKey = <string>req.headers["storage_api_key"];
+  const apiKey = <string>req.headers["storage-api-key"];
   try {
     let key = await getRepository(Key).findOneOrFail({ secret: apiKey });
     if (key) {
