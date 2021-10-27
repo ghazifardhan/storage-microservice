@@ -26,6 +26,8 @@ export const env = (): Environtment => {
     DB_USER: envUnparsed.parsed!.DB_USER,
     DB_PASS: envUnparsed.parsed!.DB_PASS,
     APP_URL: envUnparsed.parsed!.APP_URL,
+    API_ASSETS_PATH: envUnparsed.parsed!.API_ASSETS_PATH,
+    API_STORAGE_PATH: envUnparsed.parsed!.API_STORAGE_PATH,
   }
 }
 
@@ -55,9 +57,9 @@ export const uploadMulter = multer({ storage: fileUploadEngine });
 export const initialiazedController = (controllers: any[]) => {
 
   // show file publicly
-  app.use('/storage', express.static(path.join(appRoot.path, '/storage')));
+  app.use(`${env().API_STORAGE_PATH}`, express.static(path.join(appRoot.path, '/storage')));
 
-  app.get('/assets/:id', (req: express.Request, res: express.Response) => {
+  app.get(`${env().API_ASSETS_PATH}:id`, (req: express.Request, res: express.Response) => {
     let storageRepo = getRepository(Storage);
     storageRepo.findOneOrFail({ id: req.params.id })
       .then(file => {

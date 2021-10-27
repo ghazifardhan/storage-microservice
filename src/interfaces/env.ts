@@ -7,4 +7,6 @@ export interface Environtment {
   DB_HOST: string;
   DB_USER: string;
   DB_PASS: string;
+  API_ASSETS_PATH: string;
+  API_STORAGE_PATH: string;
 }
