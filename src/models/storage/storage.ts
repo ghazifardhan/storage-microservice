@@ -31,17 +31,4 @@ export class Storage {
   @Column()
   size: number;
 
-  @Column()
-  fileUrl: string;
-
-  @BeforeInsert()
-  beforeInsertFileUrl() {
-    this.fileUrl = env().APP_URL + this.id;
-  }
-
-  @AfterInsert()
-  afterInsertFileUrl() {
-    this.fileUrl = env().APP_URL + this.id;
-  }
-
 }
