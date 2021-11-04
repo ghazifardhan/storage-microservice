@@ -65,43 +65,47 @@ export class StorageController {
   }
 
   private async multipleFile(req: Request, res: Response) {
-    let connection = await createConnection();
-    let storageRepo = connection.getRepository(Storage);
+    let storageRepo = getRepository(Storage);
 
-    if (req.files !== undefined) {
-      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
-      if (files.files !== undefined) {
-        if (files.files.length > 0) {
-          let storages: Storage[] = [];
-          for (let i = 0; i < files.files.length; i++) {
-            let storage = new Storage();
-            storage.fieldName = files.files[i].fieldname;
-            storage.filename = files.files[i].filename;
-            storage.originalName = files.files[i].originalname;
-            storage.encoding = files.files[i].encoding;
-            storage.mimetype = files.files[i].mimetype;
-            storage.destination = files.files[i].destination;
-            storage.path = files.files[i].path;
-            storage.size = files.files[i].size;
-            let save = await storageRepo.save(storage);
-            storages.push(save);
+    try {
+      if (req.files !== undefined) {
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+        if (files.files !== undefined) {
+          if (files.files.length > 0) {
+            let storages: Storage[] = [];
+            for (let i = 0; i < files.files.length; i++) {
+              let storage = new Storage();
+              storage.fieldName = files.files[i].fieldname;
+              storage.filename = files.files[i].filename;
+              storage.originalName = files.files[i].originalname;
+              storage.encoding = files.files[i].encoding;
+              storage.mimetype = files.files[i].mimetype;
+              storage.destination = files.files[i].destination;
+              storage.path = files.files[i].path;
+              storage.size = files.files[i].size;
+              let save = await storageRepo.save(storage);
+              storages.push(save);
+            }
+  
+            return generalResponse({
+              data: storages,
+              status: true,
+              message: 'files created',
+              res: res,
+              httpResponse: httpResponse.Success
+            });
+          } else {
+  
+            return generalResponse({
+              data: null,
+              status: false,
+              message: 'file failed to create',
+              res: res,
+              httpResponse: httpResponse.Conflict
+            });
           }
-
-          // close connection
-          connection.close();
-
-          return generalResponse({
-            data: storages,
-            status: true,
-            message: 'files created',
-            res: res,
-            httpResponse: httpResponse.Success
-          });
         } else {
-
-          // close connection
-          connection.close();
-
+  
           return generalResponse({
             data: null,
             status: false,
@@ -110,31 +114,24 @@ export class StorageController {
             httpResponse: httpResponse.Conflict
           });
         }
-      } else {
-
-        // close connection
-        connection.close();
-
-        return generalResponse({
-          data: null,
-          status: false,
-          message: 'file failed to create',
-          res: res,
-          httpResponse: httpResponse.Conflict
-        });
       }
+  
+      return generalResponse({
+        data: null,
+        status: false,
+        message: 'file failed to create',
+        res: res,
+        httpResponse: httpResponse.Conflict
+      });
+    } catch (e) {
+      return generalResponse({
+        data: e,
+        status: false,
+        message: 'file failed to create',
+        res: res,
+        httpResponse: httpResponse.Conflict
+      });
     }
-    
-    // close connection
-    connection.close();
-
-    return generalResponse({
-      data: null,
-      status: false,
-      message: 'file failed to create',
-      res: res,
-      httpResponse: httpResponse.Conflict
-    });
   }
 
 }
