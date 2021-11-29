@@ -18,6 +18,31 @@ export class StorageController {
   private initializedRoutes() {
     this.router.post(this.path + '/single', uploadMulter.single("file"), this.singleFile);
     this.router.post(this.path + '/multiple', uploadMulter.fields([{ name: 'files' }]), this.multipleFile);
+    this.router.post(this.path + '/get-files', (req, res) => this.getFiles(req, res));
+  }
+
+  private async getFiles (req: Request, res: Response) {
+    const storageRepo = getRepository(Storage);
+    const files = req.body.files;
+
+    try {
+      const data = await storageRepo.findByIds(files as string[]);
+      return generalResponse({
+        data: data,
+        status: true,
+        message: 'get files success',
+        res: res,
+        httpResponse: httpResponse.Success
+      });
+    } catch (e) {
+      return generalResponse({
+        error: e,
+        status: false,
+        message: 'get files failed',
+        res: res,
+        httpResponse: httpResponse.Success
+      });
+    }
   }
 
   private async singleFile(req: Request, res: Response) {

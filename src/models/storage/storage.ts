@@ -1,5 +1,4 @@
-import { AfterInsert, AfterLoad, BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { env } from "../../server";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity({ name: 'storages' })
 export class Storage {

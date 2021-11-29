@@ -7,8 +7,8 @@
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start:dev": "nodemon -r dotenv/config ./src/server.ts",
-    "start:prod": "ts-node -r dotenv/config ./build/src/server.js",
+    "start:dev": "nodemon -r dotenv/config ./src/app.ts",
+    "start:prod": "ts-node -r dotenv/config ./build/src/app.js",
     "build": "tsc --build tsconfig.json",
     "create:key": "ts-node -r dotenv/config add_key.ts -keyName=perbasi-storage",
     "create:db": "ts-node -r dotenv/config create_db.ts"

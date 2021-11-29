@@ -13,23 +13,7 @@ import appRoot from 'app-root-path';
 import { Storage } from './models/storage/storage';
 import { generalResponse } from './responses/general-responses';
 import { httpResponse } from './responses/http-responses';
-
-// load env
-const envUnparsed = dotenv.config();
-export const env = (): Environtment => {
-  return {
-    API_NAME: envUnparsed.parsed!.API_NAME,
-    API_VERSION: envUnparsed.parsed!.API_VERSION,
-    API_VERSION_PATH: envUnparsed.parsed!.API_VERSION_PATH,
-    DB_HOST: envUnparsed.parsed!.DB_HOST,
-    DB_NAME: envUnparsed.parsed!.DB_NAME,
-    DB_USER: envUnparsed.parsed!.DB_USER,
-    DB_PASS: envUnparsed.parsed!.DB_PASS,
-    APP_URL: envUnparsed.parsed!.APP_URL,
-    API_ASSETS_PATH: envUnparsed.parsed!.API_ASSETS_PATH,
-    API_STORAGE_PATH: envUnparsed.parsed!.API_STORAGE_PATH,
-  }
-}
+import { env } from './config/env';
 
 // init express
 export const app = express();
@@ -87,7 +71,7 @@ export const initialiazedController = (controllers: any[]) => {
   });
 }
 
-const runServer = (port: number) => {
+export const runServer = (port: number) => {
   createConnection().then(connection => {
     app.listen(port, () => {
       // init controller
@@ -103,6 +87,3 @@ const runServer = (port: number) => {
     console.log("error.", err)
   })
 }
-
-// run the server
-runServer(5001);
