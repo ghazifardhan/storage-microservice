@@ -41,6 +41,23 @@ export const initialiazedController = (controllers: any[]) => {
   // show file publicly
   app.use(`${env().API_STORAGE_PATH}`, express.static(path.join(appRoot.path, '/storage')));
 
+  app.get(`${env().API_DOWNLOADS_PATH}:id`, (req: express.Request, res: express.Response) => {
+    let storageRepo = getRepository(Storage);
+    storageRepo.findOneOrFail({ id: req.params.id })
+      .then(file => {
+        return res.download(path.join(appRoot.path, `/${file.path}`));
+      })
+      .catch(error => {
+        return generalResponse({
+          data: null,
+          status: false,
+          message: 'file not found',
+          res: res,
+          httpResponse: httpResponse.NotFound
+        })
+      })
+  });
+
   app.get(`${env().API_ASSETS_PATH}:id`, (req: express.Request, res: express.Response) => {
     let storageRepo = getRepository(Storage);
     storageRepo.findOneOrFail({ id: req.params.id })

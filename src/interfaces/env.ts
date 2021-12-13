@@ -9,4 +9,5 @@ export interface Environtment {
   DB_PASS: string;
   API_ASSETS_PATH: string;
   API_STORAGE_PATH: string;
+  API_DOWNLOADS_PATH: string;
 }

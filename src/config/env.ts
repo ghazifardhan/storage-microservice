@@ -15,5 +15,6 @@ export const env = (): Environtment => {
     APP_URL: envUnparsed.parsed!.APP_URL,
     API_ASSETS_PATH: envUnparsed.parsed!.API_ASSETS_PATH,
     API_STORAGE_PATH: envUnparsed.parsed!.API_STORAGE_PATH,
+    API_DOWNLOADS_PATH: envUnparsed.parsed!.API_DOWNLOADS_PATH,
   }
 }
