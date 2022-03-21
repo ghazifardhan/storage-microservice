@@ -1,4 +1,4 @@
 import { runServer } from "./server";
 
 // run the server
-runServer(5001);
+runServer(5002);
