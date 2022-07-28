@@ -75,6 +75,29 @@ export const initialiazedController = (controllers: any[]) => {
       })
   });
 
+  app.get(`/detail-assets/:id`, (req: express.Request, res: express.Response) => {
+    let storageRepo = getRepository(Storage);
+    storageRepo.findOneOrFail({ id: req.params.id })
+      .then(file => {
+        return generalResponse({
+          data: file,
+          status: false,
+          message: 'file found',
+          res: res,
+          httpResponse: httpResponse.Success
+        })
+      })
+      .catch(error => {
+        return generalResponse({
+          data: null,
+          status: false,
+          message: 'file not found',
+          res: res,
+          httpResponse: httpResponse.NotFound
+        })
+      })
+  });
+
   app.use(checkApiKey);
   controllers.forEach((controller) => {
     app.use(env().API_VERSION_PATH, controller.router);
