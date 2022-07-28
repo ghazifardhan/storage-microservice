@@ -45,6 +45,7 @@ export const initialiazedController = (controllers: any[]) => {
     let storageRepo = getRepository(Storage);
     storageRepo.findOneOrFail({ id: req.params.id })
       .then(file => {
+        console.log(file);
         return res.download(path.join(appRoot.path, `/${file.path}`));
       })
       .catch(error => {
