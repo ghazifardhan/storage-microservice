@@ -1,0 +1,22 @@
+{
+  "type": "mysql",
+  "host": "127.0.0.1",
+  "port": 3306,
+  "username": "root",
+  "password": "test",
+  "database": "storage_service",
+  "synchronize": true,
+  "logging": false,
+  "entities": [
+    "src/models/**/*.ts",
+    "build/src/models/**/*.js"
+  ],
+  "migration": [
+    "src/migrations/**/*.ts",
+    "build/src/migrations/**/*.js"
+  ],
+  "subscribers": [
+    "src/subscribers/**/*.ts",
+    "build/src/subscribers/**/*.js"
+  ]
+}

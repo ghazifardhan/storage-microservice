@@ -10,7 +10,7 @@
     "start:dev": "nodemon -r dotenv/config ./src/app.ts",
     "start:prod": "ts-node -r dotenv/config ./build/src/app.js",
     "build": "tsc --build tsconfig.json",
-    "create:key": "ts-node -r dotenv/config add_key.ts -keyName=taisho-storage",
+    "create:key": "ts-node -r dotenv/config add_key.ts -keyName=general-storage",
     "create:db": "ts-node -r dotenv/config create_db.ts"
   },
   "dependencies": {
