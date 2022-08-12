@@ -11,7 +11,8 @@
     "start:prod": "ts-node -r dotenv/config ./build/src/app.js",
     "build": "tsc --build tsconfig.json",
     "create:key": "ts-node -r dotenv/config add_key.ts -keyName=general-storage",
-    "create:db": "ts-node -r dotenv/config create_db.ts"
+    "create:db": "ts-node -r dotenv/config create_db.ts",
+    "pretypeorm": "(rm ormconfig.json || :) && ts-node -r tsconfig-paths/register src/scripts/write-type-orm-config.ts"
   },
   "dependencies": {
     "api-key-auth": "^0.2.3",
@@ -39,6 +40,7 @@
     "@types/node": "^16.10.4",
     "nodemon": "^2.0.13",
     "ts-node": "^10.3.0",
+    "tsconfig-paths": "^4.1.0",
     "typescript": "^4.4.4"
   }
 }
