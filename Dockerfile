@@ -10,6 +10,6 @@ ADD . /app
 RUN yarn install
 RUN yarn build
 
-CMD yarn start:prod
+CMD sh start.sh
 
 EXPOSE 5002
