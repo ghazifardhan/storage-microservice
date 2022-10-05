@@ -49,8 +49,16 @@ async function addKey(){
     key.secret = getKey.value!;
     
     try {
-      const k = await keyRepo.save(key);
-      console.log(k);
+      // check is name exist
+      const checkKey = await keyRepo.findOne({
+        name: getKey.label!
+      });
+      if (checkKey) {
+        console.log(checkKey)
+      } else {
+        const k = await keyRepo.save(key);
+        console.log(k);
+      }
     } catch (error) {
       console.error("save failed", error);
     }

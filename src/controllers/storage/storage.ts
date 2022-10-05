@@ -5,6 +5,7 @@ import { Storage } from '../../models/storage/storage';
 import { generalResponse } from '../../responses/general-responses';
 import { httpResponse } from '../../responses/http-responses';
 import { uploadMulter } from '../../server';
+import ffmpeg from 'ffmpeg';
 
 export class StorageController {
   
@@ -17,6 +18,7 @@ export class StorageController {
 
   private initializedRoutes() {
     this.router.post(this.path + '/single', uploadMulter.single("file"), this.singleFile);
+    this.router.post(this.path + '/single-video', uploadMulter.single("file"), this.singleFileVideo);
     this.router.post(this.path + '/multiple', uploadMulter.fields([{ name: 'files' }]), this.multipleFile);
     this.router.post(this.path + '/get-files', (req, res) => this.getFiles(req, res));
   }
@@ -41,6 +43,63 @@ export class StorageController {
         message: 'get files failed',
         res: res,
         httpResponse: httpResponse.Success
+      });
+    }
+  }
+
+  private async singleFileVideo(req: Request, res: Response) {
+    let storageRepo = getRepository(Storage);
+
+    if (req.file !== undefined) {
+      let storage = new Storage();
+      storage.fieldName = req.file.fieldname;
+      storage.filename = req.file.filename;
+      storage.originalName = req.file.originalname;
+      storage.encoding = req.file.encoding;
+      storage.mimetype = req.file.mimetype;
+      storage.destination = req.file.destination;
+      storage.path = req.file.path;
+      storage.size = req.file.size;
+
+      const vidToJpgPath = `storage`;
+      let t = new ffmpeg(req.file.path, function (err, video) {
+        video.fnExtractFrameToJPG(vidToJpgPath, {
+          start_time: 1,
+          duration_time: 1,
+          frame_rate: 1,
+          number: 1,
+          file_name: `${req.file.filename}.jpg`
+        });
+      });
+
+      storage.thumbnail = `${vidToJpgPath}/${req.file.filename}_1.jpg`;
+
+      try {
+        let save = await storageRepo.save(storage);
+        return generalResponse({
+          data: save,
+          status: true,
+          message: 'file created',
+          res: res,
+          httpResponse: httpResponse.Success
+        });
+      } catch (e) {
+        console.log(e);
+        return generalResponse({
+          data: null,
+          status: false,
+          message: 'file failed to create',
+          res: res,
+          httpResponse: httpResponse.Conflict
+        });
+      }
+    } else {
+      return generalResponse({
+        data: null,
+        status: false,
+        message: 'file failed to create',
+        res: res,
+        httpResponse: httpResponse.Conflict
       });
     }
   }

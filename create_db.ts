@@ -8,14 +8,14 @@ const conn = mysql.createConnection({
   password: env().DB_PASS
 });
 
-conn.connect((err) => {
+conn.connect(async (err) => {
   if (err) throw err;
 
   console.log('Connected');
   conn.query(`CREATE DATABASE IF NOT EXISTS ${env().DB_NAME}`, (err, result) => {
+    console.log("test");
     if (err) throw err;
-
-    return console.log("Database created");
-  })
-  exit();
+    console.log("Database created");
+    exit();
+  });
 });

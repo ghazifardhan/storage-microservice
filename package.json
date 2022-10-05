@@ -10,8 +10,9 @@
     "start:dev": "nodemon -r dotenv/config ./src/app.ts",
     "start:prod": "ts-node -r dotenv/config ./build/src/app.js",
     "build": "tsc --build tsconfig.json",
-    "create:key": "ts-node -r dotenv/config add_key.ts -keyName=general-storage",
+    "create:key": "ts-node -r dotenv/config add_key.ts -keyName=public-storage",
     "create:db": "ts-node -r dotenv/config create_db.ts",
+    "create:table": "ts-node -r dotenv/config create_table.ts",
     "pretypeorm": "(rm ormconfig.json || :) && ts-node -r tsconfig-paths/register src/scripts/write-type-orm-config.ts"
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
+    "ffmpeg": "^0.0.4",
     "helmet": "^4.6.0",
     "moment": "^2.29.1",
     "morgan": "^1.10.0",
@@ -33,6 +35,7 @@
     "@types/app-root-path": "^1.2.4",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
+    "@types/ffmpeg": "^1.0.4",
     "@types/helmet": "^4.0.0",
     "@types/morgan": "^1.9.3",
     "@types/multer": "^1.4.7",
@@ -40,7 +43,7 @@
     "@types/node": "^16.10.4",
     "nodemon": "^2.0.13",
     "ts-node": "^10.3.0",
-    "s": "^4.1.0",
+    "tsconfig-paths": "^4.1.0",
     "typescript": "^4.4.4"
   }
 }
