@@ -18,7 +18,9 @@ export const app = express();
 
 // init middleware
 app.use(morgan('combined'));
-app.use(cors());
+app.use(cors({
+  origin: '*'
+}));
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
