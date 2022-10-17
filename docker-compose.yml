@@ -21,18 +21,18 @@ services:
         ports:
             - '3309:3306'
         environment:
-            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_PASSWORD: '${DB_PASS}'
             MYSQL_ROOT_HOST: "%"
-            MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
-            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_DATABASE: '${DB_NAME}'
+            MYSQL_USER: '${DB_USER}'
+            MYSQL_PASSWORD: '${DB_PASS}'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
             - 'storage-service-mysql:/var/lib/mysql-storage-service'
         networks:
             - storage-service
         healthcheck:
-            test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+            test: ["CMD", "mysqladmin", "ping", "-p${DB_PASS}"]
             retries: 3
             timeout: 5s
 networks:
