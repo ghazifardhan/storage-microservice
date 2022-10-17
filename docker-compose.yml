@@ -23,7 +23,7 @@ services:
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         ports:
-            - '5002:5002'
+            - '5100:5100'
         volumes:
             - '.:/var/www/html'
         networks:
