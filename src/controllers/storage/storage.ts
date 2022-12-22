@@ -63,16 +63,33 @@ export class StorageController {
 
       const vidToJpgPath = `storage`;
       let t = new ffmpeg(req.file.path, function (err, video) {
+        video.setVideoAspectRatio("16:9");
         video.fnExtractFrameToJPG(vidToJpgPath, {
           start_time: 1,
           duration_time: 1,
           frame_rate: 1,
           number: 1,
-          file_name: `${req.file.filename}.jpg`
+          file_name: `${req.file.filename}.jpg`,
+          keep_aspect_ratio: false,
+          keep_pixel_aspect_ratio: false,
         });
       });
 
+      // store thumbnail to database
+      // let storageThumbnail = new Storage();
+      // storageThumbnail.fieldName = `${req.file.filename}.jpg`;
+      // storageThumbnail.filename = `${req.file.filename}.jpg`;
+      // storageThumbnail.originalName = `${req.file.filename}.jpg`;
+      // storageThumbnail.encoding = '7bit';
+      // storageThumbnail.mimetype = 'image/jpeg';
+      // storageThumbnail.destination = 'storage';
+      // storageThumbnail.path = `${vidToJpgPath}/${req.file.filename}_1.jpg`;
+      // storageThumbnail.size = 100;
+
+      // let saveStorageThumbnail = await storageRepo.save(storageThumbnail);
+
       storage.thumbnail = `${vidToJpgPath}/${req.file.filename}_1.jpg`;
+      // storage.thumbnail = saveStorageThumbnail.id;
 
       try {
         let save = await storageRepo.save(storage);

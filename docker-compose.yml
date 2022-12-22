@@ -49,6 +49,15 @@ services:
             test: ["CMD", "mysqladmin", "ping", "-p${DB_PASS}"]
             retries: 3
             timeout: 5s
+    ffmpeg:
+        container_name: storage-service-ffmpeg
+        image: jrottenberg/ffmpeg
+        networks:
+            - storage-service
+        ports:
+            - "29002:29000"
+        tty: true
+        entrypoint: "bash"
 networks:
     storage-service:
         driver: bridge
