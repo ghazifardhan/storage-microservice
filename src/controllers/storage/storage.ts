@@ -54,12 +54,11 @@ export class StorageController {
     if (req.file !== undefined) {
       let storage = new Storage();
       storage.fieldName = req.file.fieldname;
-      storage.filename = req.file.filename;
+      // storage.filename = req.file.filename;
       storage.originalName = req.file.originalname;
       storage.encoding = req.file.encoding;
       storage.mimetype = req.file.mimetype;
       storage.destination = req.file.destination;
-      storage.path = req.file.path;
       storage.size = req.file.size;
 
       const vidToJpgPath = `storage`;
@@ -117,6 +116,8 @@ export class StorageController {
       // let saveStorageThumbnail = await storageRepo.save(storageThumbnail);
 
       storage.thumbnail = `${newVideoPath}_1.jpg`;
+      storage.path = newVideoPath;
+      storage.filename = `${newVideoName}.mp4`;
       // storage.thumbnail = saveStorageThumbnail.id;
 
       try {
