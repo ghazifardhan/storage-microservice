@@ -6,7 +6,9 @@ import { generalResponse } from '../../responses/general-responses';
 import { httpResponse } from '../../responses/http-responses';
 import { uploadMulter } from '../../server';
 import ffmpeg from 'ffmpeg';
+import fluentFfmpeg from 'fluent-ffmpeg'
 import fs from 'fs';
+import pathToFfmpeg from 'ffmpeg-static';
 
 export class StorageController {
   
@@ -20,6 +22,7 @@ export class StorageController {
   private initializedRoutes() {
     this.router.post(this.path + '/single', uploadMulter.single("file"), this.singleFile);
     this.router.post(this.path + '/single-video', uploadMulter.single("file"), this.singleFileVideo);
+    this.router.post(this.path + '/single-video-v2', uploadMulter.single("file"), this.singleFileVideoV2);
     this.router.post(this.path + '/multiple', uploadMulter.fields([{ name: 'files' }]), this.multipleFile);
     this.router.post(this.path + '/get-files', (req, res) => this.getFiles(req, res));
   }
@@ -44,6 +47,67 @@ export class StorageController {
         message: 'get files failed',
         res: res,
         httpResponse: httpResponse.Success
+      });
+    }
+  }
+
+  private async singleFileVideoV2(req: Request, res: Response) {
+    const vidToJpgPath = `storage`;
+    const thumbnailName = `thumbnail_${req.file.filename}`;
+    const thumbnailPath = `${vidToJpgPath}/${thumbnailName}`;
+
+    const test = fluentFfmpeg({ source: req.file.path })
+    test
+      .setFfmpegPath(pathToFfmpeg)
+      .output(`${thumbnailPath}.png`)
+      .on('error', (err) => {
+        console.log('An error occurred: ' + err.message);
+      })
+      .on('end', (err) => {
+        console.log('Processing finished !');
+      })
+      .run();
+
+    let storageRepo = getRepository(Storage);
+
+    if (req.file !== undefined) {
+      let storage = new Storage();
+      storage.fieldName = req.file.fieldname
+      storage.filename = req.file.filename;
+      storage.originalName = req.file.originalname;
+      storage.encoding = req.file.encoding;
+      storage.mimetype = req.file.mimetype;
+      storage.destination = req.file.destination;
+      storage.size = req.file.size;
+      storage.thumbnail = `${thumbnailPath}.png`;
+      storage.path = req.file.path;
+
+      try {
+        let save = await storageRepo.save(storage);
+        return generalResponse({
+          data: save,
+          status: true,
+          message: 'file created',
+          res: res,
+          httpResponse: httpResponse.Success
+        });
+      } catch (e) {
+        console.log(e);
+        return generalResponse({
+          data: null,
+          status: false,
+          message: 'file failed to create',
+          res: res,
+          httpResponse: httpResponse.Conflict
+        });
+      }
+    } else {
+      return generalResponse({
+        data: null,
+        status: false,
+        message: 'file failed to create',
+        res: res,
+        httpResponse: httpResponse.Conflict
       });
     }
   }
