@@ -6,6 +6,7 @@ import { generalResponse } from '../../responses/general-responses';
 import { httpResponse } from '../../responses/http-responses';
 import { uploadMulter } from '../../server';
 import ffmpeg from 'ffmpeg';
+import fs from 'fs';
 
 export class StorageController {
   
@@ -62,18 +63,45 @@ export class StorageController {
       storage.size = req.file.size;
 
       const vidToJpgPath = `storage`;
-      let t = new ffmpeg(req.file.path, function (err, video) {
-        video.setVideoAspectRatio("16:9");
-        video.fnExtractFrameToJPG(vidToJpgPath, {
+      const newVideoName = `formatted_${req.file.filename}`;
+      const newVideoPath = `${vidToJpgPath}/${newVideoName}.mp4`;
+
+      try {
+        const aspectRatio = await new ffmpeg(req.file.path);
+        // aspectRatio.setVideoSize('800x?', true, true);
+        aspectRatio.setVideoAspectRatio("16:9");
+        aspectRatio.setVideoFormat('mp4');
+        await aspectRatio.save(newVideoPath);
+        
+        const videoThumbnail = await new ffmpeg(newVideoPath);
+        await videoThumbnail.fnExtractFrameToJPG(vidToJpgPath, {
           start_time: 1,
           duration_time: 1,
           frame_rate: 1,
           number: 1,
-          file_name: `${req.file.filename}.jpg`,
+          file_name: `formatted_${req.file.filename}.jpg`,
           keep_aspect_ratio: false,
           keep_pixel_aspect_ratio: false,
         });
-      });
+
+        // if thumbnail created delete original video file
+        fs.unlinkSync(req.file.path);
+      } catch (e) {
+        console.log(e);
+      }
+
+      // let t = new ffmpeg(req.file.path, function (err, video) {
+      //   video.setVideoAspectRatio("16:9");
+      //   video.fnExtractFrameToJPG(vidToJpgPath, {
+      //     start_time: 1,
+      //     duration_time: 1,
+      //     frame_rate: 1,
+      //     number: 1,
+      //     file_name: `${req.file.filename}.jpg`,
+      //     keep_aspect_ratio: false,
+      //     keep_pixel_aspect_ratio: false,
+      //   });
+      // });
 
       // store thumbnail to database
       // let storageThumbnail = new Storage();
@@ -88,7 +116,7 @@ export class StorageController {
 
       // let saveStorageThumbnail = await storageRepo.save(storageThumbnail);
 
-      storage.thumbnail = `${vidToJpgPath}/${req.file.filename}_1.jpg`;
+      storage.thumbnail = `${newVideoPath}_1.jpg`;
       // storage.thumbnail = saveStorageThumbnail.id;
 
       try {
