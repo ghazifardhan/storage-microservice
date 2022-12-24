@@ -1,4 +1,4 @@
 import { runServer } from "./server";
 
 // run the server
-runServer(5100);
+runServer(+process.env.APP_PORT);
