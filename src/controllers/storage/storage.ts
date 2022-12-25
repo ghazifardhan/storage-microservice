@@ -21,8 +21,8 @@ export class StorageController {
 
   private initializedRoutes() {
     this.router.post(this.path + '/single', uploadMulter.single("file"), this.singleFile);
-    this.router.post(this.path + '/single-video', uploadMulter.single("file"), this.singleFileVideo);
-    this.router.post(this.path + '/single-video-v2', uploadMulter.single("file"), this.singleFileVideoV2);
+    this.router.post(this.path + '/single-video-v1', uploadMulter.single("file"), this.singleFileVideo);
+    this.router.post(this.path + '/single-video', uploadMulter.single("file"), this.singleFileVideoV2);
     this.router.post(this.path + '/multiple', uploadMulter.fields([{ name: 'files' }]), this.multipleFile);
     this.router.post(this.path + '/get-files', (req, res) => this.getFiles(req, res));
   }
