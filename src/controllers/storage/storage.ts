@@ -121,7 +121,7 @@ export class StorageController {
               timemarks: ["00:00:01.000"],
               filename: `${thumbnailName}.png`,
             },
-            "storage_temp/"
+            "storage/"
           );
       });
     };
@@ -138,7 +138,7 @@ export class StorageController {
         });
       }
 
-      const vidToJpgPath = `storage_temp`;
+      const vidToJpgPath = `storage`;
       const thumbnailName = `thumbnail_${req.file.filename}`;
       const thumbnailPath = `${vidToJpgPath}/${thumbnailName}`;
 

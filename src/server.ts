@@ -35,7 +35,7 @@ app.use(express.urlencoded({ extended: true }));
 // multer file upload
 const fileUploadEngine = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "storage_temp");
+    cb(null, "storage");
   },
   filename: (req, file, cb) => {
     cb(
