@@ -1,18 +1,17 @@
-import { Request, Response, Router } from 'express';
-import { lutimesSync } from 'fs';
-import { createConnection, getRepository } from 'typeorm';
-import { Storage } from '../../models/storage/storage';
-import { generalResponse } from '../../responses/general-responses';
-import { httpResponse } from '../../responses/http-responses';
-import { uploadMulter } from '../../server';
-import ffmpeg from 'ffmpeg';
-import fluentFfmpeg from 'fluent-ffmpeg'
-import fs from 'fs';
-import pathToFfmpeg from 'ffmpeg-static';
+import { Request, Response, Router } from "express";
+import { lutimesSync } from "fs";
+import { createConnection, getRepository } from "typeorm";
+import { Storage } from "../../models/storage/storage";
+import { generalResponse } from "../../responses/general-responses";
+import { httpResponse } from "../../responses/http-responses";
+import { uploadMulter } from "../../server";
+import ffmpeg from "ffmpeg";
+import fluentFfmpeg from "fluent-ffmpeg";
+import fs from "fs";
+import pathToFfmpeg from "ffmpeg-static";
 
 export class StorageController {
-  
-  private path = '/storage';
+  private path = "/storage";
   private router = Router();
 
   constructor() {
@@ -20,14 +19,32 @@ export class StorageController {
   }
 
   private initializedRoutes() {
-    this.router.post(this.path + '/single', uploadMulter.single("file"), this.singleFile);
-    this.router.post(this.path + '/single-video-v1', uploadMulter.single("file"), this.singleFileVideo);
-    this.router.post(this.path + '/single-video', uploadMulter.single("file"), this.singleFileVideoV2);
-    this.router.post(this.path + '/multiple', uploadMulter.fields([{ name: 'files' }]), this.multipleFile);
-    this.router.post(this.path + '/get-files', (req, res) => this.getFiles(req, res));
+    this.router.post(
+      this.path + "/single",
+      uploadMulter.single("file"),
+      this.singleFile
+    );
+    this.router.post(
+      this.path + "/single-video-v1",
+      uploadMulter.single("file"),
+      this.singleFileVideo
+    );
+    this.router.post(
+      this.path + "/single-video",
+      uploadMulter.single("file"),
+      this.singleFileVideoV2
+    );
+    this.router.post(
+      this.path + "/multiple",
+      uploadMulter.fields([{ name: "files" }]),
+      this.multipleFile
+    );
+    this.router.post(this.path + "/get-files", (req, res) =>
+      this.getFiles(req, res)
+    );
   }
 
-  private async getFiles (req: Request, res: Response) {
+  private async getFiles(req: Request, res: Response) {
     const storageRepo = getRepository(Storage);
     const files = req.body.files;
 
@@ -36,78 +53,170 @@ export class StorageController {
       return generalResponse({
         data: data,
         status: true,
-        message: 'get files success',
+        message: "get files success",
         res: res,
-        httpResponse: httpResponse.Success
+        httpResponse: httpResponse.Success,
       });
     } catch (e) {
       return generalResponse({
         error: e,
         status: false,
-        message: 'get files failed',
+        message: "get files failed",
         res: res,
-        httpResponse: httpResponse.Success
+        httpResponse: httpResponse.Success,
       });
     }
   }
 
+  generateThumbnail(path: string, thumbnailPath: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      resolve("asdasd");
+      // const test = fluentFfmpeg({ source: path });
+      // test
+      //   .setFfmpegPath(pathToFfmpeg)
+      //   .output(`${thumbnailPath}.png`)
+      //   .on("error", (err) => {
+      //     return reject(new Error(err));
+      //     // console.log("An error occurred: " + err.message);
+      //     // conversionError = true;
+      //     // console.log("asdasd kesisini", conversionError);
+      //   })
+      //   .on("end", (err) => {
+      //     resolve(`${thumbnailPath}.png`);
+      //     // console.log("Processing finished !");
+      //   })
+      //   .run();
+    });
+  }
+
   private async singleFileVideoV2(req: Request, res: Response) {
-    const vidToJpgPath = `storage`;
-    const thumbnailName = `thumbnail_${req.file.filename}`;
-    const thumbnailPath = `${vidToJpgPath}/${thumbnailName}`;
+    const generateThumbnail = (
+      path: string,
+      thumbnailName: string
+    ): Promise<string> => {
+      return new Promise<string>((resolve, reject) => {
+        console.log(pathToFfmpeg);
+        const test = fluentFfmpeg({ source: path });
+        test
+          // setup event handlers
+          .on("filenames", function (filenames) {
+            console.log("screenshots are " + filenames.join(", "));
+          })
+          .on("end", function () {
+            console.log("screenshots were saved");
+            resolve(`${thumbnailName}.png`);
+          })
+          .on("error", function (err) {
+            console.log("an error happened: " + err.message);
+            reject(err.message);
+          })
+          // take 2 screenshots at predefined timemarks and size
+          .takeScreenshots(
+            {
+              count: 1,
+              timemarks: ["00:00:01.000"],
+              filename: `${thumbnailName}.png`,
+            },
+            "storage/"
+          );
+      });
+    };
 
-    const test = fluentFfmpeg({ source: req.file.path })
-    test
-      .setFfmpegPath(pathToFfmpeg)
-      .output(`${thumbnailPath}.png`)
-      .on('error', (err) => {
-        console.log('An error occurred: ' + err.message);
-      })
-      .on('end', (err) => {
-        console.log('Processing finished !');
-      })
-      .run();
-
-    let storageRepo = getRepository(Storage);
-
-    if (req.file !== undefined) {
-      let storage = new Storage();
-      storage.fieldName = req.file.fieldname
-      storage.filename = req.file.filename;
-      storage.originalName = req.file.originalname;
-      storage.encoding = req.file.encoding;
-      storage.mimetype = req.file.mimetype;
-      storage.destination = req.file.destination;
-      storage.size = req.file.size;
-      storage.thumbnail = `${thumbnailPath}.png`;
-      storage.path = req.file.path;
-
-      try {
-        let save = await storageRepo.save(storage);
-        return generalResponse({
-          data: save,
-          status: true,
-          message: 'file created',
-          res: res,
-          httpResponse: httpResponse.Success
-        });
-      } catch (e) {
-        console.log(e);
+    try {
+      if (req.file.size === 0) {
         return generalResponse({
           data: null,
           status: false,
-          message: 'file failed to create',
+          message: "file failed to create",
           res: res,
-          httpResponse: httpResponse.Conflict
+          httpResponse: httpResponse.Success,
         });
       }
-    } else {
+
+      const vidToJpgPath = `storage`;
+      const thumbnailName = `thumbnail_${req.file.filename}`;
+      const thumbnailPath = `${vidToJpgPath}/${thumbnailName}`;
+
+      // const test = testaja();
+      const test = await generateThumbnail(req.file.path, thumbnailName);
+      console.log("asdasd", test);
+      // const test = fluentFfmpeg({ source: req.file.path });
+      // test
+      //   .setFfmpegPath(pathToFfmpeg)
+      //   .screenshots({
+      //     timestamps: [0.0],
+      //     filename: thumbnailName,
+      //     folder: vidToJpgPath,
+      //   })
+      //   .output(`${thumbnailPath}.png`)
+      //   .on("error", (err) => {
+      //     console.log("An error occurred: " + err.message);
+      //   })
+      //   .on("end", (err) => {
+      //     console.log("Processing finished !");
+      //   })
+      //   .run();
+
+      // console.log("asdasd", conversionError);
+      // if (conversionError) {
+      //   return generalResponse({
+      //     data: null,
+      //     status: false,
+      //     message: "file failed to create",
+      //     res: res,
+      //     httpResponse: httpResponse.Conflict,
+      //   });
+      // }
+
+      let storageRepo = getRepository(Storage);
+
+      if (req.file !== undefined) {
+        let storage = new Storage();
+        storage.fieldName = req.file.fieldname;
+        storage.filename = req.file.filename;
+        storage.originalName = req.file.originalname;
+        storage.encoding = req.file.encoding;
+        storage.mimetype = req.file.mimetype;
+        storage.destination = req.file.destination;
+        storage.size = req.file.size;
+        storage.thumbnail = `${thumbnailPath}.png`;
+        storage.path = req.file.path;
+
+        try {
+          let save = await storageRepo.save(storage);
+          return generalResponse({
+            data: save,
+            status: true,
+            message: "file created",
+            res: res,
+            httpResponse: httpResponse.Success,
+          });
+        } catch (e) {
+          console.log(e);
+          return generalResponse({
+            data: null,
+            status: false,
+            message: "file failed to create",
+            res: res,
+            httpResponse: httpResponse.Success,
+          });
+        }
+      } else {
+        return generalResponse({
+          data: null,
+          status: false,
+          message: "file failed to create",
+          res: res,
+          httpResponse: httpResponse.Success,
+        });
+      }
+    } catch (e) {
       return generalResponse({
         data: null,
         status: false,
-        message: 'file failed to create',
+        message: "file failed to create: " + e,
         res: res,
-        httpResponse: httpResponse.Conflict
+        httpResponse: httpResponse.Success,
       });
     }
   }
@@ -133,9 +242,9 @@ export class StorageController {
         const aspectRatio = await new ffmpeg(req.file.path);
         // aspectRatio.setVideoSize('800x?', true, true);
         aspectRatio.setVideoAspectRatio("16:9");
-        aspectRatio.setVideoFormat('mp4');
+        aspectRatio.setVideoFormat("mp4");
         await aspectRatio.save(newVideoPath);
-        
+
         const videoThumbnail = await new ffmpeg(newVideoPath);
         await videoThumbnail.fnExtractFrameToJPG(vidToJpgPath, {
           start_time: 1,
@@ -189,27 +298,27 @@ export class StorageController {
         return generalResponse({
           data: save,
           status: true,
-          message: 'file created',
+          message: "file created",
           res: res,
-          httpResponse: httpResponse.Success
+          httpResponse: httpResponse.Success,
         });
       } catch (e) {
         console.log(e);
         return generalResponse({
           data: null,
           status: false,
-          message: 'file failed to create',
+          message: "file failed to create",
           res: res,
-          httpResponse: httpResponse.Conflict
+          httpResponse: httpResponse.Conflict,
         });
       }
     } else {
       return generalResponse({
         data: null,
         status: false,
-        message: 'file failed to create',
+        message: "file failed to create",
         res: res,
-        httpResponse: httpResponse.Conflict
+        httpResponse: httpResponse.Conflict,
       });
     }
   }
@@ -233,27 +342,27 @@ export class StorageController {
         return generalResponse({
           data: save,
           status: true,
-          message: 'file created',
+          message: "file created",
           res: res,
-          httpResponse: httpResponse.Success
+          httpResponse: httpResponse.Success,
         });
       } catch (e) {
         console.log(e);
         return generalResponse({
           data: null,
           status: false,
-          message: 'file failed to create',
+          message: "file failed to create",
           res: res,
-          httpResponse: httpResponse.Conflict
+          httpResponse: httpResponse.Conflict,
         });
       }
     } else {
       return generalResponse({
         data: null,
         status: false,
-        message: 'file failed to create',
+        message: "file failed to create",
         res: res,
-        httpResponse: httpResponse.Conflict
+        httpResponse: httpResponse.Conflict,
       });
     }
   }
@@ -263,7 +372,9 @@ export class StorageController {
 
     try {
       if (req.files !== undefined) {
-        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+        const files = req.files as {
+          [fieldname: string]: Express.Multer.File[];
+        };
         if (files.files !== undefined) {
           if (files.files.length > 0) {
             let storages: Storage[] = [];
@@ -280,52 +391,49 @@ export class StorageController {
               let save = await storageRepo.save(storage);
               storages.push(save);
             }
-  
+
             return generalResponse({
               data: storages,
               status: true,
-              message: 'files created',
+              message: "files created",
               res: res,
-              httpResponse: httpResponse.Success
+              httpResponse: httpResponse.Success,
             });
           } else {
-  
             return generalResponse({
               data: null,
               status: false,
-              message: 'file failed to create',
+              message: "file failed to create",
               res: res,
-              httpResponse: httpResponse.Conflict
+              httpResponse: httpResponse.Conflict,
             });
           }
         } else {
-  
           return generalResponse({
             data: null,
             status: false,
-            message: 'file failed to create',
+            message: "file failed to create",
             res: res,
-            httpResponse: httpResponse.Conflict
+            httpResponse: httpResponse.Conflict,
           });
         }
       }
-  
+
       return generalResponse({
         data: null,
         status: false,
-        message: 'file failed to create',
+        message: "file failed to create",
         res: res,
-        httpResponse: httpResponse.Conflict
+        httpResponse: httpResponse.Conflict,
       });
     } catch (e) {
       return generalResponse({
         data: e,
         status: false,
-        message: 'file failed to create',
+        message: "file failed to create",
         res: res,
-        httpResponse: httpResponse.Conflict
+        httpResponse: httpResponse.Conflict,
       });
     }
   }
-
 }

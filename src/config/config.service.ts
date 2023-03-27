@@ -27,12 +27,12 @@ class ConfigService {
 
   public getTypeOrmConfig() {
     return {
-      type: this.getValue('DB_TYPE'),
-      host: this.getValue('DB_HOST'),
-      port: parseInt(this.getValue('DB_PORT')),
-      username: this.getValue('DB_USER'),
-      password: this.getValue('DB_PASS'),
-      database: this.getValue('DB_NAME'),
+      type: process.env.DB_TYPE,
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
+      username: process.env.DB_USER,
+      password: process.env.DB_PASS,
+      database: process.env.DB_NAME,
       entities: [
         "src/models/**/*.ts",
         "build/src/models/**/*.js"
