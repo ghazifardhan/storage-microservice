@@ -142,7 +142,11 @@ export class StorageController {
 
       // const test = testaja();
       console.log("asdasd_jalanin ini kedua");
-      const test = await generateThumbnail(req.file.path, thumbnailName);
+      if (fs.existsSync(req.file.path)) {
+        const test = await generateThumbnail(req.file.path, thumbnailName);
+        console.log("asdasd_jalanin ini keempat", test);
+      }
+
       // const test = fluentFfmpeg({ source: req.file.path });
       // test
       //   .setFfmpegPath(pathToFfmpeg)
