@@ -145,6 +145,7 @@ export class StorageController {
       // const test = testaja();
       console.log("asdasd_jalanin ini kedua", fs.existsSync(req.file.path));
       if (fs.existsSync(req.file.path)) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         const test = await generateThumbnail(req.file.path, thumbnailName);
         console.log("asdasd_jalanin ini keempat", test);
       }
