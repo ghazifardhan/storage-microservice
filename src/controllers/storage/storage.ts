@@ -110,8 +110,8 @@ export class StorageController {
             console.log("screenshots were saved");
             resolve(`${thumbnailName}.png`);
           })
-          .on("error", function (err) {
-            console.log("an error happened: " + err.message);
+          .on("error", function (err, stdout, stderr) {
+            console.log("An error occurred: " + err.message, err, stderr);
             reject(err.message);
           })
           // take 2 screenshots at predefined timemarks and size
