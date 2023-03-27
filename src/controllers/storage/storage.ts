@@ -97,7 +97,7 @@ export class StorageController {
       return new Promise<string>((resolve, reject) => {
         console.log(pathToFfmpeg);
         const test = fluentFfmpeg({
-          source: `/opt/storage-microservice/${path}`,
+          source: path,
         });
         test
           // setup event handlers
@@ -140,7 +140,10 @@ export class StorageController {
       const thumbnailPath = `${vidToJpgPath}/${thumbnailName}`;
 
       // const test = testaja();
-      const test = await generateThumbnail(req.file.path, thumbnailName);
+      const test = await generateThumbnail(
+        `/mnt/block-storage/storage-service/${req.file.filename}`,
+        thumbnailName
+      );
       console.log("asdasd", test);
       // const test = fluentFfmpeg({ source: req.file.path });
       // test
