@@ -96,7 +96,9 @@ export class StorageController {
     ): Promise<string> => {
       return new Promise<string>((resolve, reject) => {
         console.log(pathToFfmpeg);
-        const test = fluentFfmpeg({ source: `./${path}` });
+        const test = fluentFfmpeg({
+          source: `/opt/storage-microservice/${path}`,
+        });
         test
           // setup event handlers
           .on("filenames", function (filenames) {
