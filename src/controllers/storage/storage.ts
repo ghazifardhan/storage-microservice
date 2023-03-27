@@ -95,7 +95,7 @@ export class StorageController {
       thumbnailName: string
     ): Promise<string> => {
       return new Promise<string>((resolve, reject) => {
-        console.log("asdasd_jalanin ini kedua", pathToFfmpeg);
+        console.log("asdasd_jalanin ini ketiga", pathToFfmpeg);
         const test = fluentFfmpeg({
           source: path,
         });
@@ -141,8 +141,8 @@ export class StorageController {
       const thumbnailPath = `${vidToJpgPath}/${thumbnailName}`;
 
       // const test = testaja();
+      console.log("asdasd_jalanin ini kedua");
       const test = await generateThumbnail(req.file.path, thumbnailName);
-      console.log("asdasd_jalanin ini ketiga", pathToFfmpeg);
       // const test = fluentFfmpeg({ source: req.file.path });
       // test
       //   .setFfmpegPath(pathToFfmpeg)
