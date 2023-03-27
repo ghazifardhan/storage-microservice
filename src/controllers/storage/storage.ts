@@ -141,7 +141,7 @@ export class StorageController {
       const thumbnailPath = `${vidToJpgPath}/${thumbnailName}`;
 
       // const test = testaja();
-      console.log("asdasd_jalanin ini kedua");
+      console.log("asdasd_jalanin ini kedua", fs.existsSync(req.file.path));
       if (fs.existsSync(req.file.path)) {
         const test = await generateThumbnail(req.file.path, thumbnailName);
         console.log("asdasd_jalanin ini keempat", test);
