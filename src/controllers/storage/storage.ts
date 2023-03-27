@@ -140,10 +140,7 @@ export class StorageController {
       const thumbnailPath = `${vidToJpgPath}/${thumbnailName}`;
 
       // const test = testaja();
-      const test = await generateThumbnail(
-        `/mnt/block-storage/storage-service/${req.file.filename}`,
-        thumbnailName
-      );
+      const test = await generateThumbnail(req.file.path, thumbnailName);
       console.log("asdasd", test);
       // const test = fluentFfmpeg({ source: req.file.path });
       // test
