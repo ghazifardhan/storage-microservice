@@ -100,6 +100,8 @@ export class StorageController {
           source: path,
         });
         test
+          // setup ffmpeg path
+          .setFfmpegPath(pathToFfmpeg)
           // setup event handlers
           .on("filenames", function (filenames) {
             console.log("screenshots are " + filenames.join(", "));
