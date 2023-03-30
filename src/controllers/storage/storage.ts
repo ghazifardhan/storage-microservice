@@ -25,6 +25,11 @@ export class StorageController {
       this.singleFile
     );
     this.router.post(
+      this.path + "/single-css",
+      uploadMulter.single("file"),
+      this.singleFileCss
+    );
+    this.router.post(
       this.path + "/single-video-v1",
       uploadMulter.single("file"),
       this.singleFileVideo
@@ -302,6 +307,50 @@ export class StorageController {
       storage.path = newVideoPath;
       storage.filename = `${newVideoName}.mp4`;
       // storage.thumbnail = saveStorageThumbnail.id;
+
+      try {
+        let save = await storageRepo.save(storage);
+        return generalResponse({
+          data: save,
+          status: true,
+          message: "file created",
+          res: res,
+          httpResponse: httpResponse.Success,
+        });
+      } catch (e) {
+        console.log(e);
+        return generalResponse({
+          data: null,
+          status: false,
+          message: "file failed to create",
+          res: res,
+          httpResponse: httpResponse.Conflict,
+        });
+      }
+    } else {
+      return generalResponse({
+        data: null,
+        status: false,
+        message: "file failed to create",
+        res: res,
+        httpResponse: httpResponse.Conflict,
+      });
+    }
+  }
+
+  private async singleFileCss(req: Request, res: Response) {
+    let storageRepo = getRepository(Storage);
+    if (req.file !== undefined) {
+      let storage = new Storage();
+      storage.id = req.body.id;
+      storage.fieldName = req.file.fieldname;
+      storage.filename = req.file.filename;
+      storage.originalName = req.file.originalname;
+      storage.encoding = req.file.encoding;
+      storage.mimetype = req.file.mimetype;
+      storage.destination = req.file.destination;
+      storage.path = req.file.path;
+      storage.size = req.file.size;
 
       try {
         let save = await storageRepo.save(storage);
